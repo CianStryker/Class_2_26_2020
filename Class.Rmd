@@ -1,0 +1,44 @@
+---
+title: "Class"
+author: "Cian Stryker"
+date: "2/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(skimr)
+library(rstanarm)
+library(tidyverse)
+```
+
+```{r}
+load("nes.rda")
+
+y <- nes %>%
+    select(year, partyid7, real_ideo, race_adj, age_discrete, educ1, female, income) %>%
+    group_by(year) %>%
+    count(real_ideo)
+
+y2 <- aggregate(n ~ year, data = y, FUN = sum)
+```
+
+```{r}
+x <- nes %>%
+    select(year, partyid7, real_ideo, race_adj, age_discrete, educ1, female, income) %>%
+    drop_na() %>%
+    mutate(gender = as.factor(ifelse(female == 1, "female", "non-female")))
+```
+
+```{r}
+yo <- stan_glm(partyid7 ~ gender, data = x, refresh = 0)
+
+print(yo)
+```
+
+
+```{r}
+
+```
+
