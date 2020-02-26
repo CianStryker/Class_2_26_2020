@@ -32,13 +32,56 @@ x <- nes %>%
 ```
 
 ```{r}
-yo <- stan_glm(partyid7 ~ gender, data = x, refresh = 0)
+fit_1 <- stan_glm(partyid7 ~ gender, data = x, refresh = 0)
 
-print(yo)
+print(fit_1)
 ```
 
 
 ```{r}
+x2 <- x %>%
+  filter(gender == "non-female") %>%
+  group_by(partyid7) %>%
+  count(partyid7)
 
+x3 <- x2 %>%
+  head(5) %>%
+  ungroup() %>%
+  summarize(total = sum(n))
+
+x4 <- x2 %>%
+  tail(2) %>%
+  ungroup() %>%
+  summarize(total = sum(n))
+
+x5 <- x3 + x4
+
+answer <- x3/x5
+```
+
+```{r}
+w <- x %>%
+  mutate(pred = predict(fit_1, x)) %>%
+  select(partyid7, gender, pred)
+```
+
+```{r}
+ v<- nes %>%
+    select(year, partyid7, real_ideo, race_adj, age_discrete, educ1, female, income) %>%
+    drop_na() %>%
+    mutate(race = as.factor(case_when(race_adj == 1 ~ "White",
+                                      race_adj == 1.5 ~ "Other", 
+                                    race_adj == 2 ~ "Black")))
+
+fit_2 <- stan_glm(partyid7 ~ race, data = v, refresh = 0)
+```
+
+```{r}
+print(fit_2)
+
+
+w2 <- v %>%
+  mutate(pred = predict(fit_2, v)) %>%
+  select(partyid7, race, pred)
 ```
 
