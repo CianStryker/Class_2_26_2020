@@ -85,3 +85,4 @@ w2 <- v %>%
   select(partyid7, race, pred)
 ```
 
+Intercept is Basline Black Median. I.e. White median is 4 or baseline + Median 1.9
